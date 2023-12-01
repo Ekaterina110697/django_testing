@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from notes.models import Note
+from notes.forms import NoteForm
 
 User = get_user_model()
 
@@ -35,8 +36,9 @@ class TestContent(TestCase):
             self.client.force_login(user)
             with self.subTest(user=user.username, note_in_list=note_in_list):
                 response = self.client.get(reverse('notes:list'))
-                note_in_object_list = self.note in response.context[
-                    'object_list']
+                object_list = response.context.get('object_list')
+                self.assertIsNotNone(object_list)
+                note_in_object_list = self.note in object_list
                 self.assertEqual(note_in_object_list, note_in_list)
 
     def test_pages_contains_form(self):
@@ -49,3 +51,4 @@ class TestContent(TestCase):
                 self.client.force_login(self.author)
                 response = self.client.get(reverse(page, args=args))
                 self.assertIn('form', response.context)
+                self.assertIsInstance(response.context['form'], NoteForm)

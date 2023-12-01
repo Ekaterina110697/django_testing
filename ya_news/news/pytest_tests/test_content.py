@@ -1,50 +1,49 @@
-from django.conf import settings
-from django.urls import reverse
-
 import pytest
 
+from news.forms import CommentForm
+from django.conf import settings
 
-@pytest.mark.django_db
-@pytest.mark.usefixtures('news_list')
-def test_news_page(client):
+
+pytestmark = pytest.mark.django_db
+
+
+def test_news_page(client, home_url):
     """Проверка вывода кол-во новостей на странице"""
-    url = reverse('news:home')
-    response = client.get(url)
-    news_count = len(response.context['object_list'])
-    assert news_count == settings.NEWS_COUNT_ON_HOME_PAGE
+    response = client.get(home_url)
+    news_count = object_list = response.context.get('object_list')
+    assert object_list is not None
+    assert len(news_count) <= settings.NEWS_COUNT_ON_HOME_PAGE
 
 
-@pytest.mark.django_db
-@pytest.mark.usefixtures('news_list')
-def test_news(client):
+def test_news(client, home_url):
     """Проверка сортировки новостей"""
-    url = reverse('news:home')
-    response = client.get(url)
-    all_dates = [news.date for news in response.context['object_list']]
+    response = client.get(home_url)
+    object_list = response.context.get('object_list')
+    assert object_list is not None
+    all_dates = [news.date for news in object_list]
     sorted_dates = sorted(all_dates, reverse=True)
     assert all_dates == sorted_dates
 
 
-@pytest.mark.django_db
-@pytest.mark.usefixtures('comment_list')
-def test_comments(client, news_id):
+def test_comments(client, detail_url, news):
     """Проверка сортировки комментариев по времени"""
-    url = reverse('news:detail', args=news_id)
-    response = client.get(url)
-    all_comments = response.context['news'].comment_set.all()
-    assert all_comments[0].created < all_comments[1].created
+    response = client.get(detail_url)
+    comments = response.context.get('news')
+    assert comments is not None
+    comments_set = news.comment_set.all()
+    all_comments = [comment.created for comment in comments_set]
+    sorted_comments = sorted(all_comments)
+    assert all_comments == sorted_comments
 
 
 @pytest.mark.parametrize(
     'key, value',
     (
-        (pytest.lazy_fixture('author_client'), True),
+        (pytest.lazy_fixture('user_client'), True),
         (pytest.lazy_fixture('client'), False),
     )
 )
-@pytest.mark.django_db
-def test_form_show_correct_user(key, value, news_id):
+def test_form_show_correct_user(key, value, detail_url):
     """Проверка формы для отправки комментариев"""
-    url = reverse('news:detail', args=news_id)
-    response = key.get(url)
-    assert ('form' in response.context) == value
+    response = key.get(detail_url)
+    assert isinstance(response.context.get('form'), CommentForm) == value

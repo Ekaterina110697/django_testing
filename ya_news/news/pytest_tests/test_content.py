@@ -46,4 +46,4 @@ def test_comments(client, detail_url, news):
 def test_form_show_correct_user(key, value, detail_url):
     """Проверка формы для отправки комментариев"""
     response = key.get(detail_url)
-    assert isinstance(response.context.get('form'), CommentForm) == value
+    assert isinstance(response.context.get('form'), CommentForm) is value

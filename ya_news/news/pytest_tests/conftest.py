@@ -23,6 +23,17 @@ def user_client(author):
 
 
 @pytest.fixture
+def reader(django_user_model):
+    return django_user_model.objects.create(username='Читатель')
+
+
+@pytest.fixture
+def user_reader(reader, client):
+    client.force_login(reader)
+    return client
+
+
+@pytest.fixture
 def bad_words_data():
     return {'text': f'Какой-то текст, {BAD_WORDS[0]}, еще текст'}
 

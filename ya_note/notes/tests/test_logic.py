@@ -67,11 +67,14 @@ class TestRoutes(TestCase):
 
     def test_unique_slug(self):
         """Невозможно создать две заметки с одинаковым slug"""
+        note_count = Note.objects.count()
+        self.form_data['slug'] = self.note.slug
         self.author_client.post(self.add_url, data=self.form_data)
         response = self.author_client.post(self.add_url, data=self.form_data)
         warning = self.form_data['slug'] + WARNING
         self.assertFormError(response, form='form',
                              field='slug', errors=warning)
+        self.assertEqual(Note.objects.count(), note_count)
 
     def test_auto_slug(self):
         """Автоматически формируется slug"""

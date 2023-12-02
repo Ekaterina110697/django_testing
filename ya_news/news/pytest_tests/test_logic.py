@@ -64,13 +64,13 @@ def test_author_can_delete_comment(detail_url, delete_url, user_client):
 
 
 def test_reader_cant_edit_comment_of_another_user(
-        admin_client,
+        user_reader,
         edit_url,
         form_data_comment,
         comment
 ):
     """Проверка доступа только к своим коментариям"""
-    response = admin_client.post(edit_url, form_data_comment)
+    response = user_reader.post(edit_url, form_data_comment)
     assert response.status_code == HTTPStatus.NOT_FOUND
     comment_from_db = Comment.objects.get(id=comment.id)
     assert comment.text == comment_from_db.text

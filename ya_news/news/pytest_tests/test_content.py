@@ -10,9 +10,9 @@ pytestmark = pytest.mark.django_db
 def test_news_page(client, home_url):
     """Проверка вывода кол-во новостей на странице"""
     response = client.get(home_url)
-    news_count = object_list = response.context.get('object_list')
+    object_list = response.context.get('object_list')
     assert object_list is not None
-    assert len(news_count) <= settings.NEWS_COUNT_ON_HOME_PAGE
+    assert object_list.count() <= settings.NEWS_COUNT_ON_HOME_PAGE
 
 
 def test_news(client, home_url):

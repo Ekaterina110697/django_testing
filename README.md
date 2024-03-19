@@ -10,30 +10,31 @@ YaNote: электронная записная книжка для тех, кт
 - Pytest
 - Unittest
 
-# Запуск проекта
-1. ### Склонируйте репозиторий:
+# Как запустить проект:
+Клонировать репозиторий и перейти в него в командной строке:
 ```
 git clone git@github.com:Ekaterina110697/django_testing.git
 ```
 
-2. ### Создайте и активируйте виртуальное окружение:
-Команда для установки виртуального окружения на Mac или Linux:
+Cоздать и активировать виртуальное окружение:
+
 ```
-python3 -m venv env
-source env/bin/activate
+python -m venv env
 ```
 
-Команда для установки виртуального окружения на Windows:
 ```
-python -m venv venv
-source venv/Scripts/activate
+source venv\Scripts\activate  
 ```
 
-3. ### Установите зависимости:
+Установить зависимости из файла requirements.txt:
+
+```
+python -m pip install --upgrade pip
+```
+
 ```
 pip install -r requirements.txt
 ```
-
 ## Как запустить тесты
 
 Переходим в директорию ya_news и запускаем Pytest:
